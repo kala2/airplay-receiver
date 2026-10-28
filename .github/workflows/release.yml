@@ -32,12 +32,15 @@ concurrency:
 
 env:
   # Release tooling, installed on the fly with npx (no package.json/lockfile in the repo).
-  # Exact versions keep releases reproducible; bump them here to upgrade.
+  # Exact versions keep releases reproducible; bump them here to upgrade. The preset's major
+  # must match the conventional-changelog-writer bundled with semantic-release: 25.x ships
+  # release-notes-generator 14 (writer 8) → preset 9.x. Preset 10 needs writer 9 and fails
+  # in generateNotes ("Missing helper").
   NODE_VERSION: "24.22.1"
   SEMANTIC_RELEASE_PACKAGES: >-
     semantic-release@25.0.9
     @semantic-release/exec@7.1.0
-    conventional-changelog-conventionalcommits@10.4.1
+    conventional-changelog-conventionalcommits@9.3.1
   # Public SHA-256 fingerprint of the release certificate (repository variable, see CONTRIBUTING.md):
   # release-build.sh refuses an APK signed with anything else.
   EXPECTED_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
