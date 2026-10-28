@@ -1,0 +1,15 @@
+#!/bin/bash
+# Rejects commit messages that don't follow Conventional Commits (same rule as CI).
+# Enable once per clone: git config core.hooksPath scripts/git-hooks
+subject=$(head -1 "$1")
+case "$subject" in Merge\ *|fixup!\ *|squash!\ *) exit 0 ;; esac
+pattern='^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert|style)(\([a-z0-9._/-]+\))?!?: .+'
+if ! printf '%s' "$subject" | grep -Eq "$pattern"; then
+    echo "✗ Commit message must follow Conventional Commits, e.g.:" >&2
+    echo "    feat: add 1440p option        (new feature → minor version)" >&2
+    echo "    fix(audio): stop crackle      (bug fix → patch version)" >&2
+    echo "    feat!: …  or 'BREAKING CHANGE:' footer  (→ major version)" >&2
+    echo "    docs: / ci: / chore: / refactor: / test: / build: / perf: / style: / revert:" >&2
+    echo "  Got: $subject" >&2
+    exit 1
+fi

@@ -1,0 +1,26 @@
+# Weekly update PRs for the pinned GitHub Actions (SHA pins) and the Gradle plugins/libraries.
+# The semantic-release tooling is pinned by exact version in .github/workflows/release.yml
+# (installed on the fly with npx) and bumped there by hand.
+# Third-party C libraries (UxPlay, libplist, OpenSSL) are pinned in scripts/fetch-deps.sh and
+# updated by hand (see CONTRIBUTING.md), because they need a checksum + rebuild + device test.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci          # Conventional Commits: "ci(deps): bump …"
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build       # "build(deps): bump …"
+      include: scope
+    open-pull-requests-limit: 5

@@ -1,0 +1,49 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Security problems: please use **Security → Report a vulnerability** instead.
+        Protected apps (Netflix, Disney+, Apple TV+) showing black is expected (DRM).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open Screen Mirroring on the iPhone\n2. Tap …\n3. …"
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: App version
+      placeholder: "1.0.0 (Releases) or commit SHA"
+    validations:
+      required: true
+  - type: input
+    id: tv
+    attributes:
+      label: TV device and Android version
+      placeholder: "Chromecast with Google TV, Android TV 14"
+    validations:
+      required: true
+  - type: input
+    id: sender
+    attributes:
+      label: Sender device and OS version
+      placeholder: "iPhone 15, iOS 26.1 / MacBook, macOS …"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "`adb logcat -d -s AirPlayRx:V AndroidRuntime:E` — remove anything you consider private."
+      render: text

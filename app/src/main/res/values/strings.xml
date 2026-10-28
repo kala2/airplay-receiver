@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AirPlay Receiver</string>
+    <string name="idle_title">Ready for AirPlay</string>
+    <string name="notification_channel">AirPlay receiver</string>
+    <string name="notification_text">Ready for Screen Mirroring</string>
+    <string name="idle_hint">On your iPhone: Control Center → Screen Mirroring → %1$s</string>
+    <string name="rename_button">Rename</string>
+    <string name="quality_button">Quality: %1$s</string>
+    <string name="rename_title">Name shown on your iPhone</string>
+    <string name="rename_save">Save</string>
+    <string name="rename_cancel">Cancel</string>
+    <string name="rename_error_empty">Please enter a name.</string>
+    <string name="rename_error_too_long">That name is too long.</string>
+    <string name="rename_error_character">Please avoid @ . \\ and special control characters.</string>
+    <string name="rename_error_same_as_tv">That is the TV\'s own name, which Android does not allow twice. Please choose another.</string>
+</resources>
