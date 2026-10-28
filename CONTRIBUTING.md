@@ -24,6 +24,19 @@ Examples: `fix(audio): stop crackle after pause`, `feat: add 1440p quality optio
 `native`, `build`, `ci`, …
 
 ## Pull requests
+`main` is protected: every change goes through a pull request, which can only be (squash-)merged
+when CI is green (`Conventional Commits` + `Build & test`) and the branch is up to date. Direct
+pushes and force pushes to `main` are rejected; `v*` tags can only be created by the release
+workflow.
+
+```bash
+git switch -c fix/short-description          # branch from an up-to-date main
+# …commit (Conventional Commits, checked by the hook)…
+git push -u origin fix/short-description
+gh pr create --fill --title "fix(scope): what changes"   # the PR title becomes the commit on main
+gh pr merge --squash --auto                  # merges by itself once CI passes
+```
+
 1. Branch from `main`; keep changes focused.
 2. Run before pushing: `scripts/test-native.sh`, `./gradlew testDebugUnitTest lintDebug assembleDebug`.
 3. Changes to video, audio, discovery or CEC can only be verified on a real device — please say
