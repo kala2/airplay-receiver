@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Video surface underneath, idle screen on top. The SurfaceView stays VISIBLE (a GONE
+     SurfaceView has no surface); the idle screen has an opaque background to cover it and is
+     hidden while mirroring. MainActivity resizes the SurfaceView to the video's aspect ratio. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <SurfaceView
+        android:id="@+id/video_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/idle_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/idle_background"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_mirror" />
+
+        <TextView
+            android:id="@+id/idle_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/idle_title"
+            android:textColor="@color/idle_text"
+            android:textSize="40sp" />
+
+        <TextView
+            android:id="@+id/device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/accent"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/idle_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/idle_text_secondary"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal">
+
+            <!-- Focused by default so the remote's OK button opens the rename dialog. -->
+            <Button
+                android:id="@+id/rename_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rename_button">
+                <requestFocus />
+            </Button>
+
+            <!-- Cycles 720p / 1080p (Milestone 9). -->
+            <Button
+                android:id="@+id/quality_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Stats overlay (Milestone 9), toggled with OK on the remote while mirroring. -->
+    <TextView
+        android:id="@+id/stats_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="24dp"
+        android:background="#B0000000"
+        android:fontFamily="monospace"
+        android:padding="12dp"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp"
+        android:visibility="gone" />
+</FrameLayout>

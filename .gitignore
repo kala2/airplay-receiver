@@ -1,0 +1,37 @@
+# --- Secrets: never commit (signing lives in ~/airplayrx-keys, see README) ---
+*.jks
+*.keystore
+*.p12
+signing.properties
+local.properties
+pico.save
+*.save
+
+# --- Downloaded / built dependencies: re-created by scripts/fetch-deps.sh + build-openssl.sh
+#     (pinned versions + SHA-256 in fetch-deps.sh) ---
+/third_party/
+
+# --- Build outputs ---
+.gradle/
+.kotlin/
+build/
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+
+# --- IDE / OS ---
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# --- Claude Code local session data ---
+.claude/
+
+# --- Release tooling (installed on the fly in CI; never committed) ---
+node_modules/
+package.json
+package-lock.json
+/dist/

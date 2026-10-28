@@ -1,0 +1,18 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    ["@semantic-release/commit-analyzer", { "preset": "conventionalcommits" }],
+    ["@semantic-release/release-notes-generator", { "preset": "conventionalcommits" }],
+    ["@semantic-release/exec", {
+      "verifyReleaseCmd": "scripts/ci/check-version.sh ${nextRelease.version}",
+      "prepareCmd": "scripts/ci/release-build.sh ${nextRelease.version}"
+    }],
+    ["@semantic-release/github", {
+      "assets": [{ "path": "dist/*" }],
+      "successComment": false,
+      "failComment": false,
+      "releasedLabels": false
+    }]
+  ]
+}

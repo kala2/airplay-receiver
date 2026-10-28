@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/idle_background" />
+    <foreground>
+        <inset android:drawable="@drawable/ic_mirror" android:inset="25%" />
+    </foreground>
+</adaptive-icon>

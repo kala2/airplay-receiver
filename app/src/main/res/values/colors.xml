@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="idle_background">#FF0F141C</color>
+    <color name="idle_text">#FFFFFFFF</color>
+    <color name="idle_text_secondary">#FF9FB0C4</color>
+    <color name="accent">#FF73BFFF</color>
+</resources>

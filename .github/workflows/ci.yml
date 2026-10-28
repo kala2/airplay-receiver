@@ -1,0 +1,120 @@
+# CI: every push and pull request is built and tested. Read-only token, no secrets.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: this workflow only reads the repository.
+permissions:
+  contents: read
+
+# A newer push to the same branch/PR cancels the older run.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commits:
+    name: Conventional Commits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out (full history for the commit range)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Release Please derives versions from these messages, so every commit must follow
+      # https://www.conventionalcommits.org: type(scope)!: description
+      - name: Check commit messages
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            range="$PR_BASE..$PR_HEAD"
+          elif [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then
+            range="$AFTER"                      # first push of a branch: check everything
+          else
+            range="$BEFORE..$AFTER"
+          fi
+          pattern='^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert|style)(\([a-z0-9._/-]+\))?!?: .+'
+          bad=0
+          while IFS= read -r line; do
+            sha=${line%% *}; subject=${line#* }
+            case "$subject" in Merge\ *) continue ;; esac   # GitHub merge commits
+            if ! printf '%s' "$subject" | grep -Eq "$pattern"; then
+              echo "::error::$sha does not follow Conventional Commits: $subject"; bad=1
+            fi
+          done < <(git log --format='%H %s' --no-merges "$range")
+          exit $bad
+
+  build-test:
+    name: Build & test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle (wrapper validation + build cache)
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          # Only main writes the cache; PR builds reuse it without polluting it.
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Install pinned Android SDK packages (versions from app/build.gradle.kts)
+        run: scripts/setup-sdk.sh --ci
+
+      # Sources (pinned + SHA-256 checked) and the OpenSSL build only change with these scripts.
+      - name: Cache third-party sources and OpenSSL build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: third_party
+          key: third-party-${{ runner.os }}-ndk${{ env.NDK_VERSION }}-${{ hashFiles('scripts/fetch-deps.sh', 'scripts/build-openssl.sh', 'gradle.properties') }}
+
+      - name: Fetch pinned dependencies
+        run: scripts/fetch-deps.sh
+
+      - name: Build OpenSSL (skipped when cached)
+        run: OPENSSL_JOBS="$(nproc)" scripts/build-openssl.sh
+
+      - name: Native host unit tests (ASan + UBSan)
+        run: scripts/test-native.sh
+
+      - name: Unit tests, lint, debug + release build
+        # The release build here is unsigned (no secrets in CI); it still exercises R8 + LTO.
+        run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug assembleRelease
+
+      - name: Upload test and lint reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+            app/build/test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
