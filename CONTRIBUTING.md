@@ -26,8 +26,8 @@ Examples: `fix(audio): stop crackle after pause`, `feat: add 1440p quality optio
 ## Pull requests
 `main` is protected: every change goes through a pull request, which can only be (squash-)merged
 when CI is green (`Conventional Commits` + `Build & test`) and the branch is up to date. Direct
-pushes and force pushes to `main` are rejected; `v*` tags can only be created by the release
-workflow.
+pushes and force pushes to `main` are rejected for everyone except the repository owner (admin
+bypass); `v*` release tags are created only by the release workflow.
 
 ```bash
 git switch -c fix/short-description          # branch from an up-to-date main
